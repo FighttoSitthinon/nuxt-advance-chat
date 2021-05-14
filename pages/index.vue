@@ -127,7 +127,7 @@
                 </v-row>
               </div>
             </div>
-            <div class="mesgs">
+            <div v-if="seenMsgGroup" class="mesgs">
               <div v-if="loading" class="text-center">
                 <v-progress-circular
                   indeterminate
@@ -192,7 +192,7 @@
                       style="position: absolute; right: 0; top: 10px;"
                       @click="saveMessage"
                     >
-                      <v-icon color="white">mdi-send</v-icon>
+                      <v-icon>mdi-send-outline</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -229,6 +229,7 @@ export default {
       currentGroup: null,
       dialog: false,
       loading: false,
+      seenMsgGroup: false,
     }
   },
   watch: {
@@ -237,6 +238,7 @@ export default {
       this.saveUserToLocalStorage(val)
       this.saveUserToStore(val)
       this.fetchUsers()
+      this.getDefaultGroup()
       const exist = await this.checkUserExisted(val)
       if (exist) {
         this.fetchGroupByUserID(val.uid)
@@ -249,6 +251,9 @@ export default {
     this.user = this.decryptUser()
   },
   methods: {
+    log(logdata) {
+      console.log(logdata)
+    },
     async login() {
       this.user = await this.signInWithGoogleAuthentication()
     },
@@ -266,6 +271,7 @@ export default {
       this.filtered = null
     },
     async chooseGroup(group) {
+      this.seenMsgGroup = true
       this.messages = []
       this.loading = true
       this.currentGroup = group
@@ -303,6 +309,11 @@ export default {
         this.updateGroup(group)
       }
     },
+    getDefaultGroup() {
+      if (this.groups.length) {
+        this.chooseGroup(this.groups[0])
+      }
+    },
     getUserGroupById(userId) {
       return this.currentGroup.users.filter((user) => user.uid === userId)[0]
     },
@@ -327,6 +338,7 @@ export default {
   },
 }
 </script>
+
 <style scoped>
 .container {
   max-width: 1170px;
@@ -442,11 +454,11 @@ img {
 }
 .received_withd_msg p {
   background: #ebebeb none repeat scroll 0 0;
-  border-radius: 3px;
+  border-radius: 7px 7px 7px 0;
   color: #646464;
   font-size: 14px;
   margin: 0;
-  padding: 5px 10px 5px 12px;
+  padding: 10px 16px;
   width: 100%;
 }
 .time_date {
@@ -465,17 +477,17 @@ img {
 }
 
 .sent_msg p {
-  background: #05728f none repeat scroll 0 0;
-  border-radius: 3px;
+  background: #ff9da5 none repeat scroll 0 0;
+  border-radius: 7px 7px 0 7px;
   font-size: 14px;
   margin: 0;
   color: #fff;
-  padding: 5px 10px 5px 12px;
+  padding: 10px 16px;
   width: 100%;
 }
 .outgoing_msg {
   overflow: hidden;
-  margin: 26px 0 26px;
+  margin: 20px 0;
 }
 .sent_msg {
   float: right;
@@ -508,7 +520,7 @@ img {
   width: 33px;
 }
 .messaging {
-  padding: 0 0 50px 0;
+  margin: auto;
 }
 .msg_history {
   height: 516px;
