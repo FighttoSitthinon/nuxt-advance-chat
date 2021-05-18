@@ -101,7 +101,7 @@
               </div>
               <div class="inbox_chat">
                 <v-row
-                  v-for="group in groups"
+                  v-for="group in orderedGroups"
                   :key="group.id"
                   class="chat_list px-0 mx-0"
                   @click="chooseGroup(group)"
@@ -221,6 +221,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import GroupDialog from '~/components/GroupDialog'
 import group from '~/mixins/group'
 import authentication from '~/mixins/authentication'
@@ -247,6 +248,11 @@ export default {
       loading: false,
       seenMsgGroup: false,
     }
+  },
+  computed: {
+    orderedGroups() {
+      return _.orderBy(this.groups, 'modifiedAt', 'desc')
+    },
   },
   watch: {
     async user(val) {
