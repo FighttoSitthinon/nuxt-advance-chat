@@ -7,12 +7,13 @@ export default {
     }
   },
   methods: {
-    saveMessage(messageText, sentAt, currentGroupId) {
+    saveMessage(messageText, sentAt, currentGroupId, isNotification) {
       if (messageText.trim()) {
         const message = {
           messageText,
           sentAt,
           sentBy: this.user.uid,
+          isNotification,
         }
         return new Promise((resolve, reject) => {
           db.collection('message')

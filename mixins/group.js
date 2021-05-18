@@ -69,7 +69,7 @@ export default {
             querySnapshot.forEach((doc) => {
               const data = doc.data()
               data.id = doc.id
-              if (data.recentMessage) allGroups.push(data)
+              allGroups.push(data)
             })
             vm.groups = allGroups
           })
@@ -102,15 +102,15 @@ export default {
           console.error('Error writing document: ', error)
         })
     },
-    addNewGroupToUser(user, groupId) {
-      const groups = user.groups ? user.groups : []
-      const existed = groups.filter((group) => group === groupId)
-      if (existed.length === 0) {
-        groups.push(groupId)
-        user.groups = groups
-        const userRef = db.collection('user')
-        userRef.doc(user.uid).set(user)
-      }
-    },
+    // addNewGroupToUser(user, groupId) {
+    //   const groups = user.groups ? user.groups : []
+    //   const existed = groups.filter((group) => group === groupId)
+    //   if (existed.length === 0) {
+    //     groups.push(groupId)
+    //     user.groups = groups
+    //     const userRef = db.collection('user')
+    //     userRef.doc(user.uid).set(user)
+    //   }
+    // },
   },
 }

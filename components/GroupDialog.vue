@@ -126,11 +126,11 @@ export default {
         this.name,
         1
       )
-      if (group) {
+      /* if (group) {
         chosenUsers.forEach((user) => {
           this.addNewGroupToUser(user, group.id)
         })
-      }
+      } */
       this.$emit('created', group)
       this.dialog = false
     },

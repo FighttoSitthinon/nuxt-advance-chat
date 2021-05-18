@@ -12,7 +12,7 @@ export default {
             .get()
             .then(function (doc) {
               // eslint-disable-next-line no-console
-              console.log(JSON.stringify(doc.data()))
+              // console.log(JSON.stringify(doc.data()))
               resolve(doc.data())
             })
             .catch(function (error) {
