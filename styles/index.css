@@ -87,13 +87,22 @@ img {
   overflow: hidden;
   clear: both;
 }
-.chat_list {
-  border-bottom: 1px solid #c4c4c4;
-  cursor: pointer;
-}
+
 .inbox_chat {
   height: 550px;
   overflow-y: scroll;
+}
+
+.inbox_chat .chat_list{
+  background-color: #fff;
+  transition: 0.25s ease-in-out;  
+  border-bottom: 1px solid #ececec;
+  cursor: pointer;
+}
+
+.inbox_chat .chat_list.active{
+  background-color: #ffd0d487;
+  color: #ef5360;
 }
 
 .active_chat {
@@ -186,11 +195,24 @@ img {
   height: 516px;
   overflow-y: auto;
 }
+.group-name{
+  font-weight: 600;
+  font-size: .9375rem;
+}
+.text-no-wrap{
+  white-space: nowrap; 
+  width: 50px; 
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  font-size: .8125rem;
+}
 .chat_date {
   color: rgba(0, 0, 0, 0.4);
   display: inline-block;
   font-size: 13px;
   font-weight: 400;
+  text-align: right;
+  font-style: italic;
 }
 
 .user-detail {
@@ -221,4 +243,7 @@ img {
   position: absolute;
   right: 0;
   top: 10px;
+}
+.send-msg-btn i{
+  color: #ef5360 !important;
 }

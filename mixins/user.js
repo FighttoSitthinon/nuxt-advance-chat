@@ -5,7 +5,8 @@ export default {
     fetchUsersByGroup(group) {
       group.users = []
       const promises = []
-      group.members.forEach((member) => {
+      const members = Object.keys(group.members)
+      members.forEach((member) => {
         const promise = new Promise((resolve, reject) => {
           db.collection('user')
             .doc(member)

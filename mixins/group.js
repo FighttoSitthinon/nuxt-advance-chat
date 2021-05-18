@@ -10,10 +10,14 @@ export default {
   methods: {
     createGroup(userArray, createdBy, name, type) {
       const vm = this
+      const members = {}
+      userArray.forEach((mem) => {
+        members[mem] = true
+      })
       const group = {
         createdAt: new Date(),
         createdBy,
-        members: userArray,
+        members,
         name,
         type,
       }
@@ -31,18 +35,17 @@ export default {
       })
     },
     filterGroup(userArray) {
-      const vm = this
-      vm.groups = []
       return new Promise((resolve, reject) => {
         let groupRef = db.collection('group')
-        userArray.forEach((userId) => {
-          groupRef = groupRef.where('members', '==', userId)
+        userArray.forEach((mem) => {
+          groupRef = groupRef.where(`members.${mem}`, '==', true)
         })
         groupRef
           .get()
           .then(function (querySnapshot) {
             const allGroups = []
             querySnapshot.forEach((doc) => {
+              console.log(doc)
               const data = doc.data()
               data.id = doc.id
               allGroups.push(data)
@@ -63,7 +66,7 @@ export default {
       return new Promise((resolve, reject) => {
         const groupRef = db.collection('group')
         groupRef
-          .where('members', 'array-contains', uid)
+          .where(`members.${uid}`, '==', true)
           .onSnapshot((querySnapshot) => {
             const allGroups = []
             querySnapshot.forEach((doc) => {
@@ -102,15 +105,5 @@ export default {
           console.error('Error writing document: ', error)
         })
     },
-    // addNewGroupToUser(user, groupId) {
-    //   const groups = user.groups ? user.groups : []
-    //   const existed = groups.filter((group) => group === groupId)
-    //   if (existed.length === 0) {
-    //     groups.push(groupId)
-    //     user.groups = groups
-    //     const userRef = db.collection('user')
-    //     userRef.doc(user.uid).set(user)
-    //   }
-    // },
   },
 }

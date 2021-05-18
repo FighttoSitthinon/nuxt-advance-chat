@@ -39,7 +39,7 @@
                     <GroupDialog
                       v-if="users.length > 0"
                       :users="users.filter((item) => item.uid !== user.uid)"
-                      @created="createFirstMessageInGroup($event)"
+                      @created="afterCreateGroupChat($event)"
                     />
                   </v-col>
                 </v-row>
@@ -102,12 +102,15 @@
               <div class="inbox_chat">
                 <v-row
                   v-for="group in orderedGroups"
+                  v-bind:class="{
+                    active: currentGroup == group,
+                  }"
                   :key="group.id"
                   class="chat_list px-0 mx-0"
                   @click="chooseGroup(group)"
                 >
-                  <v-col cols="3" class="px-6">
-                    <v-avatar left>
+                  <v-col cols="3" class="px-6 center">
+                    <v-avatar center>
                       <v-img
                         v-if="getGroupInfo(group).type === 0"
                         size="20"
@@ -120,13 +123,15 @@
                   </v-col>
                   <v-col cols="9">
                     <v-row no-gutters>
-                      <v-col cols="12">{{ getGroupInfo(group).name }}</v-col>
-                      <v-col cols="4" class="text-no-wrap">{{
+                      <v-col cols="12" class="group-name">{{
+                        getGroupInfo(group).name
+                      }}</v-col>
+                      <v-col cols="6" class="text-no-wrap">{{
                         group.recentMessage
-                          ? group.recentMessage.messageText + '...'
+                          ? group.recentMessage.messageText
                           : ''
                       }}</v-col>
-                      <v-col cols="8" class="chat_date mt-1">
+                      <v-col cols="6" class="chat_date mt-1">
                         {{
                           (group.modifiedAt ? group.modifiedAt.seconds : 0)
                             | formatUnix
@@ -201,13 +206,11 @@
                     <v-btn
                       class="mx-2 send-msg-btn"
                       fab
-                      dark
                       small
                       depressed
-                      color="primary"
                       @click="saveMessage"
                     >
-                      <v-icon>mdi-send-outline</v-icon>
+                      <v-icon>mdi-send</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -251,6 +254,7 @@ export default {
   },
   computed: {
     orderedGroups() {
+      // sort chat when modified
       return _.orderBy(this.groups, 'modifiedAt', 'desc')
     },
   },
@@ -287,34 +291,22 @@ export default {
           'Private',
           0
         )
-        if (group) {
-          const sentAt = new Date()
-          const message = await this.saveMessage(
-            'Chat created.',
-            sentAt,
-            group.id,
-            true
-          )
-          if (message) {
-            await this.updateGroup({
-              ...group,
-              ...{
-                users: null,
-                modifiedAt: sentAt,
-                recentMessage: { ...message, ...{ readBy: [] } },
-              },
-            })
-          }
-        }
+        this.createFirstMessageInGroup(group)
       }
       this.chooseGroup(group)
       this.filtered = null
+    },
+    afterCreateGroupChat(group) {
+      if (group) {
+        this.createFirstMessageInGroup(group)
+        this.chooseGroup(group)
+      }
     },
     async createFirstMessageInGroup(group) {
       if (group) {
         const sentAt = new Date()
         const message = await this.saveMessage(
-          'Chat created.',
+          'Chat created. Welcome to ZipChat!',
           sentAt,
           group.id,
           true
@@ -329,7 +321,6 @@ export default {
             },
           })
         }
-        this.chooseGroup(group)
       }
     },
     async chooseGroup(group) {
@@ -397,9 +388,8 @@ export default {
     getGroupInfo(group) {
       const result = {}
       if (group.type === 0) {
-        const uid = group.members.filter(
-          (member) => member !== this.user.uid
-        )[0]
+        const members = Object.keys(group.members)
+        const uid = members.filter((member) => member !== this.user.uid)[0]
         const receiver = this.getUserById(uid)
         result.name = receiver.displayName
         result.photoURL = receiver.photoURL
